@@ -19,7 +19,6 @@ T = 5
 m = pyomo.ConcreteModel()
 times = range(T)
 
-
 m.Pgas = pyomo.Var(times, domain=pyomo.Integers, bounds=(Pgasmin, Pgasmax))
 m.Pcoal = pyomo.Var(times, domain=pyomo.Integers, bounds=(Pcoalmin, Pcoalmax))
 m.Phob = pyomo.Var(times, domain=pyomo.Integers, bounds=(Phobmin, Phobmax))
@@ -46,14 +45,9 @@ for v in m.component_objects(pyomo.Var, active=True):
     print ("Type of object accessed via getattr: ", str(type(varobject))[1:-1])
  
     for index in varobject:
-        # print ("   ", index, round(varobject[index].value, 3))
-        
-        if v.name == "SOCnext":
-            mat.append(varobject[index].value)
-        else:
-            # print(varobject[index].name)
-            print(round(varobject[index].value))
-            mat.append(round(varobject[index].value))
+        # print(varobject[index].name)
+        print(round(varobject[index].value))
+        mat.append(round(varobject[index].value))
 
         mat.append(round(varobject[index].value, 3))
     plt.plot(mat)
