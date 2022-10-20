@@ -1,5 +1,18 @@
 import pyomo.environ as pyomo
 import matplotlib.pyplot as plt
+import pandas as pd
+
+def demanddata():
+    df = pd.read_csv('helen_2015_2021b.csv',sep = ';', decimal=',')
+
+    df.columns = ['Date', 'Consumption']
+    df = df.loc[26306:35065]
+    df['Date']= pd.to_datetime(df['Date'], format='%d.%m.%Y %H:%M')
+    df['Date'] = pd.to_datetime(df["Date"].dt.strftime('%Y-%m-%d %H'))
+    df["Consumption"] = pd.to_numeric(df["Consumption"])
+    print(df.head())
+    
+    return df
 
 Pgasmax = 5
 Pcoalmax = 10
@@ -24,7 +37,7 @@ m.Pcoal = pyomo.Var(times, domain=pyomo.Integers, bounds=(Pcoalmin, Pcoalmax))
 m.Phob = pyomo.Var(times, domain=pyomo.Integers, bounds=(Phobmin, Phobmax))
 
 # cost = sum(P[t]*(m.PGB[t]+m.PGL[t]) - FiT[t]*m.PPVG[t] for t in times)
-cost = sum(Pricegas[t]*m.Pgas[t]+Pricecoal[t]*m.Pcoal[t]+PriceHOB[t]*m.Phob[t] for t in times)
+cost = sum(sum(Pricegas[t]*m.Pgas[t]+Pricecoal[t]*m.Pcoal[t]+PriceHOB[t]*m.Phob[t] for t in times) for g in G)
 
 m.cost = pyomo.Objective(expr = cost, sense=pyomo.minimize)
 
